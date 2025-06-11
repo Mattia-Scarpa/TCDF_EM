@@ -1,0 +1,9 @@
+Variable i,Variable j,Time lag of i,Link type i --- j,Link value
+coolant,stator_tooth,4,-->,1.0
+coolant,stator_yoke,0,o-o,1.0
+stator_winding,stator_tooth,0,o-o,1.0
+stator_tooth,stator_winding,0,o-o,1.0
+i_d,torque,0,o-o,1.0
+i_q,torque,0,o-o,1.0
+stator_yoke,stator_tooth,0,o-o,1.0
+torque,i_q,0,o-o,1.0
