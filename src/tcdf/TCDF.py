@@ -24,10 +24,10 @@ def preparedata(file, target):
     df_yshift = df_y.copy(deep=True).shift(periods=1, axis=0)
     df_yshift[target]=df_yshift[target].fillna(0.)
     df_x[target] = df_yshift *0 # remove self causation
-    data_x = df_x.values.astype('float32').transpose()    
-    data_y = df_y.values.astype('float32').transpose()
-    data_x = torch.from_numpy(data_x).to(device='cuda')
-    data_y = torch.from_numpy(data_y).to(device='cuda')
+    data_x = df_x.values.astype("float32").transpose()    
+    data_y = df_y.values.astype("float32").transpose()
+    data_x = torch.from_numpy(data_x).to(device="cuda")
+    data_y = torch.from_numpy(data_y).to(device="cuda")
 
     x, y = Variable(data_x), Variable(data_y)
     return x, y
@@ -55,7 +55,7 @@ def train(epoch, traindata, traintarget, modelname:ADDSTCN, optimizer,log_interv
     modelname.lasso_lambda = modelname.lasso_lambda * 0.9999 #decay lasso lambda to zero
 
     if epoch % log_interval ==0 or epoch % epochs == 0 or epoch==1:
-        print('Epoch: {:2d} [{:.0f}%] \tLoss: {:.6f}'.format(epoch, epochpercentage, loss))
+        print("Epoch: {:2d} [{:.0f}%] \tLoss: {:.6f}".format(epoch, epochpercentage, loss))
 
     return attentionscores.data, loss
 
@@ -211,10 +211,10 @@ def train_multi(epoch, dataloader, modelname, optimizer, log_interval, epochs):
     avg_loss = total_loss / len(dataloader)
     epochpercentage = (epoch / int(epochs)) * 100
     
-    print(f'Epoch: {epoch}/{float(epochs)} [{epochpercentage:.2f}%]', end='\r')
+    print(f"Epoch: {epoch}/{float(epochs)} [{epochpercentage:.2f}%]", end="\r")
     
     if epoch % log_interval == 0 or epoch % epochs == 0 or epoch == 1:
-        print('Epoch: {:2d} [{:.0f}%] \tAvg Loss: {:.6f}'.format(epoch, epochpercentage, avg_loss))
+        print("Epoch: {:2d} [{:.0f}%] \tAvg Loss: {:.6f}".format(epoch, epochpercentage, avg_loss))
     
     # Return average attention scores
     if all_attention_scores:
@@ -268,10 +268,10 @@ def findcauses_multi(target, cuda, epochs, kernel_size, layers,
     if scores is None:
         return [], {}, 0, []
     
-    print("Attention scores:\n[", end='')
+    print("Attention scores:\n[", end="")
     for i, s in enumerate(scores):
-        print(f'{s.item():.2e}{str(', ' if i < (len(scores)-1) else '')}', end='')
-    print(']')    
+        print(f"{s.item():.2e}{str(", " if i < (len(scores)-1) else "")}", end="")
+    print("]")    
     potentials = [idx for idx, s in enumerate(scores) if s.abs() > 0.2]
     print("Potential causes: ", potentials)
     # Validate causes
@@ -279,9 +279,9 @@ def findcauses_multi(target, cuda, epochs, kernel_size, layers,
     
     # Apply PIVM validation (simplified for multiple files)
     improvement_ratio = (float(firstloss)/float(realloss))
-    print('='*25)
-    print(f'- first_loss: {firstloss:.4e}\n - final_loss: {realloss:.4e}\nImprovement ratio: {improvement_ratio:.4f}')
-    print('.'*25)
+    print("="*25)
+    print(f"- first_loss: {firstloss:.4e}\n - final_loss: {realloss:.4e}\nImprovement ratio: {improvement_ratio:.4f}")
+    print("."*25)
     for idx in potentials:
         # For simplicity, validate on first file
         X_test, Y_test = preparedata(dataset.data_list[0][2], target)
@@ -309,15 +309,15 @@ def findcauses_multi(target, cuda, epochs, kernel_size, layers,
         # testdiff = firstloss - testloss
         improvement_ratio_test = (float(firstloss)/float(testloss))
         degradation = improvement_ratio/improvement_ratio_test
-        print(f'Cause {df_first.columns[idx]}')
-        print(f'- test_loss : {testloss:.4e}\nImprovement ratio: {improvement_ratio_test:.4f} - Degradation: {degradation}')
+        print(f"Cause {df_first.columns[idx]}")
+        print(f"- test_loss : {testloss:.4e}\nImprovement ratio: {improvement_ratio_test:.4f} - Degradation: {degradation}")
         if degradation > 10:
-            print(f'OK! {df_first.columns[idx]} is a VALIDATED cause!')
+            print(f"OK! {df_first.columns[idx]} is a VALIDATED cause!")
         else:
             validated.remove(idx)
-        print('-'*25)
+        print("-"*25)
         
-    print('='*25)
+    print("="*25)
     
     # Discover delays
     weights = []
