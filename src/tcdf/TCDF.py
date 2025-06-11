@@ -270,7 +270,8 @@ def findcauses_multi(target, cuda, epochs, kernel_size, layers,
     
     print("Attention scores:\n[", end="")
     for i, s in enumerate(scores):
-        print(f"{s.item():.2e}{str(", " if i < (len(scores)-1) else "")}", end="")
+        separator = ", " if i < (len(scores)-1) else ""
+        print(f"[{s.item():2e}] {separator}", end="")
     print("]")    
     potentials = [idx for idx, s in enumerate(scores) if s.abs() > 0.2]
     print("Potential causes: ", potentials)
